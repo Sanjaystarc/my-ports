@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperBox - Ultimate Utility Toolkit</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #0000ff;
+            --secondary: #ff8c00;
+            --accent: #ff0088;
+            --dark: #848484;
+            --darker: #a04070;
+            --text: #467264;
+            --text-secondary: #cccccc;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Lava Background Animation */
+        .lava-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .lava-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.7;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .lava-blob:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--primary), transparent);
+            top: -200px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .lava-blob:nth-child(2) {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--secondary), transparent);
+            bottom: -300px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        .lava-blob:nth-child(3) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent), transparent);
+            top: 50%;
+            left: 70%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(20px, 30px) scale(1.1);
+            }
+            50% {
+                transform: translate(-15px, 10px) scale(0.9);
+            }
+            75% {
+                transform: translate(10px, -20px) scale(1.05);
+            }
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px rgba(255, 69, 0, 0.5);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(135, 89, 73, 0.8), 0 0 40px rgba(255, 140, 0, 0.6);
+            }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Main Grid Layout */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tool Card Styles */
+        .tool-card {
+            background: rgba(20, 20, 20, 0.7);
+            border-radius: 20px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 69, 0, 0.2);
+            border-color: rgba(255, 69, 0, 0.6);
+        }
+
+        .tool-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .tool-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .tool-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Tool Screen Styles */
+        .tool-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 69, 0, 0.3);
+        }
+
+        .tool-header h2 {
+            font-size: 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .close-btn {
+            background: rgba(255, 69, 0, 0.2);
+            border: none;
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 69, 0, 0.4);
+            transform: rotate(90deg);
+        }
+
+        .tool-content {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .input-group input, 
+        .input-group select, 
+        .input-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(30, 30, 30, 0.7);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, 
+        .input-group select:focus, 
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 69, 0, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result h3 {
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .tool-screen {
+                padding: 1rem;
+            }
+        }
+
+        /* Animation for tool screens */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-screen.active {
+            display: flex;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        /* Special styles for specific tools */
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 2rem auto;
+            background: radial-gradient(circle, var(--primary), transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            animation: pulse 8s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .dice {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.5s ease;
+        }
+
+        .coin {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ffa500);
+            margin: 2rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 1s ease;
+        }
+
+        .flipping {
+            animation: flip 1s ease;
+        }
+
+        @keyframes flip {
+            0% {
+                transform: rotateY(0);
+            }
+            50% {
+                transform: rotateY(180deg);
+            }
+            100% {
+                transform: rotateY(360deg);
+            }
+        }
+
+        .rolling {
+            animation: roll 0.5s ease;
+        }
+
+        @keyframes roll {
+            0% {
+                transform: rotate(0) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.1);
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Lava Background -->
+    <div class="lava-bg">
+        <div class="lava-blob"></div>
+        <div class="lava-blob"></div>
+        <div class="lava-blob"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <h1 class="logo">SupeBox</h1>
+        <p class="tagline">10 Powerful Tools • Fully Offline • Futuristic Design</p>
+    </header>
+
+    <!-- Tools Grid -->
+    <main class="tools-grid">
+        <!-- Tool 1: Age & Date Calculator -->
+        <div class="tool-card" data-tool="age-calculator">
+            <div class="tool-icon">📅</div>
+            <h3 class="tool-title">Age & Date Calculator</h3>
+            <p class="tool-desc">Calculate age between dates or add/subtract time from a date</p>
+        </div>
+
+        <!-- Tool 2: Unit Converter -->
+        <div class="tool-card" data-tool="unit-converter">
+            <div class="tool-icon">📏</div>
+            <h3 class="tool-title">Unit Converter</h3>
+            <p class="tool-desc">Convert between different units of length, weight, volume, and more</p>
+        </div>
+
+        <!-- Tool 3: Flashcard Quiz -->
+        <div class="tool-card" data-tool="flashcard-quiz">
+            <div class="tool-icon">📚</div>
+            <h3 class="tool-title">Flashcard Quiz</h3>
+            <p class="tool-desc">Create and study with interactive flashcards</p>
+        </div>
+
+        <!-- Tool 4: Loan & EMI Calculator -->
+        <div class="tool-card" data-tool="loan-calculator">
+            <div class="tool-icon">💰</div>
+            <h3 class="tool-title">Loan & EMI Calculator</h3>
+            <p class="tool-desc">Calculate loan payments, interest, and EMI</p>
+        </div>
+
+        <!-- Tool 5: Geometry Helper -->
+        <div class="tool-card" data-tool="geometry-helper">
+            <div class="tool-icon">🔺</div>
+            <h3 class="tool-title">Geometry Helper</h3>
+            <p class="tool-desc">Calculate area, perimeter, volume of shapes</p>
+        </div>
+
+        <!-- Tool 6: Time Zone Converter -->
+        <div class="tool-card" data-tool="timezone-converter">
+            <div class="tool-icon">🌐</div>
+            <h3 class="tool-title">Time Zone Converter</h3>
+            <p class="tool-desc">Convert time between different time zones</p>
+        </div>
+
+        <!-- Tool 7: Dice Roller & Coin Flip -->
+        <div class="tool-card" data-tool="dice-roller">
+            <div class="tool-icon">🎲</div>
+            <h3 class="tool-title">Dice Roller & Coin Flip</h3>
+            <p class="tool-desc">Random dice rolls and coin flips with animations</p>
+        </div>
+
+        <!-- Tool 8: Number System Converter -->
+        <div class="tool-card" data-tool="number-converter">
+            <div class="tool-icon">🔢</div>
+            <h3 class="tool-title">Number System Converter</h3>
+            <p class="tool-desc">Convert between decimal, binary, octal, and hexadecimal</p>
+        </div>
+
+        <!-- Tool 9: Percentage & Ratio Tool -->
+        <div class="tool-card" data-tool="percentage-tool">
+            <div class="tool-icon">📊</div>
+            <h3 class="tool-title">Percentage & Ratio Tool</h3>
+            <p class="tool-desc">Calculate percentages, ratios, and proportions</p>
+        </div>
+
+        <!-- Tool 10: Breathing Timer / Focus Clock -->
+        <div class="tool-card" data-tool="breathing-timer">
+            <div class="tool-icon">🧘</div>
+            <h3 class="tool-title">Breathing Timer / Focus Clock</h3>
+            <p class="tool-desc">Meditation timer with visual breathing guide</p>
+        </div>
+    </main>
+
+    <!-- Tool Screens -->
+    
+    <!-- Age & Date Calculator -->
+    <div id="age-calculator" class="tool-screen">
+        <div class="tool-header">
+            <h2>Age & Date Calculator</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <div class="input-group">
+                <label for="birthdate">Birth Date</label>
+                <input type="date" id="birthdate">
+            </div>
+            <div class="input-group">
+                <label for="target-date">Target Date (Optional)</label>
+                <input type="date" id="target-date">
+            </div>
+            <button class="btn" id="calculate-age">Calculate Age</button>
+            <div class="result" id="age-result">
+                <h3>Result</h3>
+                <p>Your age will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unit Converter -->
+    <div id="unit-converter" class="tool-screen">
+        <div class="tool-header">
+            <h2>Unit Converter</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <div class="input-group">
+                <label for="conversion-type">Conversion Type</label>
+                <select id="conversion-type">
+                    <option value="length">Length</option>
+                    <option value="weight">Weight</option>
+                    <option value="temperature">Temperature</option>
+                    <option value="volume">Volume</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="from-unit">From Unit</label>
+                <select id="from-unit"></select>
+            </div>
+            <div class="input-group">
+                <label for="to-unit">To Unit</label>
+                <select id="to-unit"></select>
+            </div>
+            <div class="input-group">
+                <label for="conversion-value">Value</label>
+                <input type="number" id="conversion-value" placeholder="Enter value">
+            </div>
+            <button class="btn" id="convert-units">Convert</button>
+            <div class="result" id="conversion-result">
+                <h3>Result</h3>
+                <p>Conversion result will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flashcard Quiz -->
+    <div id="flashcard-quiz" class="tool-screen">
+        <div class="tool-header">
+            <h2>Flashcard Quiz</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <div class="input-group">
+                <label for="flashcard-front">Front of Card</label>
+                <input type="text" id="flashcard-front" placeholder="Enter question or term">
+            </div>
+            <div class="input-group">
+                <label for="flashcard-back">Back of Card</label>
+                <input type="text" id="flashcard-back" placeholder="Enter answer or definition">
+            </div>
+            <button class="btn" id="add-flashcard">Add Flashcard</button>
+            <div class="result" id="flashcard-display">
+                <h3>Flashcards</h3>
+                <div id="flashcards-list"></div>
+                <button class="btn" id="start-quiz" style="margin-top: 1rem;">Start Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan & EMI Calculator -->
+    <div id="loan-calculator" class="tool-screen">
+        <div class="tool-header">
+            <h2>Loan & EMI Calculator</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <div class="input-group">
+                <label for="loan-amount">Loan Amount ($)</label>
+                <input type="number" id="loan-amount" placeholder="Enter loan amount">
+            </div>
+            <div class="input-group">
+                <label for="interest-rate">Interest Rate (%)</label>
+                <input type="number" id="interest-rate" placeholder="Enter interest rate">
+            </div>
+            <div class="input-group">
+                <label for="loan-term">Loan Term (months)</label>
+                <input type="number" id="loan-term" placeholder="Enter loan term in months">
+            </div>
+            <button class="btn" id="calculate-emi">Calculate EMI</button>
+            <div class="result" id="emi-result">
+                <h3>Result</h3>
+                <p>EMI calculation will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Geometry Helper -->
+    <div id="geometry-helper" class="tool-screen">
+        <div class="tool-header">
+            <h2>Geometry Helper</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <div class="input-group">
+                <label for="shape-type">Shape</label>
+                <select id="shape-type">
+                    <option value="circle">Circle</option>
+                    <option value="rectangle">Rectangle</option>
+                    <option value="triangle">Triangle</option>
+                    <option value="sphere">Sphere</option>
+                </select>
+            </div>
+            <div id="shape-inputs">
+                <!-- Dynamic inputs will be inserted here -->
+            </div>
+            <button class="btn" id="calculate-geometry">Calculate</button>
+            <div class="result" id="geometry-result">
+                <h3>Result</h3>
+                <p>Geometry calculation will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Zone Converter -->
+    <div id="timezone-converter" class="tool-screen">
+        <div class="tool-header">
+            <h2>Time Zone Converter</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <div class="input-group">
+                <label for="from-timezone">From Timezone</label>
+                <select id="from-timezone"></select>
+            </div>
+            <div class="input-group">
+                <label for="to-timezone">To Timezone</label>
+                <select id="to-timezone"></select>
+            </div>
+            <div class="input-group">
+                <label for="time-input">Time</label>
+                <input type="time" id="time-input">
+            </div>
+            <button class="btn" id="convert-timezone">Convert Time</button>
+            <div class="result" id="timezone-result">
+                <h3>Result</h3>
+                <p>Time conversion will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dice Roller & Coin Flip -->
+    <div id="dice-roller" class="tool-screen">
+        <div class="tool-header">
+            <h2>Dice Roller & Coin Flip</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <h3 style="text-align: center; margin-bottom: 1rem;">Dice Roller</h3>
+            <div class="dice-container">
+                <div class="dice" id="dice-1">1</div>
+                <div class="dice" id="dice-2">1</div>
+            </div>
+            <button class="btn" id="roll-dice" style="display: block; margin: 0 auto;">Roll Dice</button>
+            
+            <h3 style="text-align: center; margin: 2rem 0 1rem;">Coin Flip</h3>
+            <div class="coin" id="coin">Heads</div>
+            <button class="btn" id="flip-coin" style="display: block; margin: 0 auto;">Flip Coin</button>
+        </div>
+    </div>
+
+    <!-- Number System Converter -->
+    <div id="number-converter" class="tool-screen">
+        <div class="tool-header">
+            <h2>Number System Converter</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <div class="input-group">
+                <label for="number-input">Number</label>
+                <input type="text" id="number-input" placeholder="Enter number">
+            </div>
+            <div class="input-group">
+                <label for="from-base">From Base</label>
+                <select id="from-base">
+                    <option value="10">Decimal (10)</option>
+                    <option value="2">Binary (2)</option>
+                    <option value="8">Octal (8)</option>
+                    <option value="16">Hexadecimal (16)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="to-base">To Base</label>
+                <select id="to-base">
+                    <option value="10">Decimal (10)</option>
+                    <option value="2">Binary (2)</option>
+                    <option value="8">Octal (8)</option>
+                    <option value="16">Hexadecimal (16)</option>
+                </select>
+            </div>
+            <button class="btn" id="convert-number">Convert Number</button>
+            <div class="result" id="number-result">
+                <h3>Result</h3>
+                <p>Number conversion will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Percentage & Ratio Tool -->
+    <div id="percentage-tool" class="tool-screen">
+        <div class="tool-header">
+            <h2>Percentage & Ratio Tool</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <div class="input-group">
+                <label for="percentage-type">Calculation Type</label>
+                <select id="percentage-type">
+                    <option value="percentage">Percentage of a Number</option>
+                    <option value="increase">Percentage Increase</option>
+                    <option value="decrease">Percentage Decrease</option>
+                    <option value="ratio">Ratio Calculator</option>
+                </select>
+            </div>
+            <div id="percentage-inputs">
+                <!-- Dynamic inputs will be inserted here -->
+            </div>
+            <button class="btn" id="calculate-percentage">Calculate</button>
+            <div class="result" id="percentage-result">
+                <h3>Result</h3>
+                <p>Percentage calculation will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breathing Timer / Focus Clock -->
+    <div id="breathing-timer" class="tool-screen">
+        <div class="tool-header">
+            <h2>Breathing Timer / Focus Clock</h2>
+            <button class="close-btn">✕</button>
+        </div>
+        <div class="tool-content">
+            <div class="input-group">
+                <label for="breathing-duration">Session Duration (minutes)</label>
+                <input type="number" id="breathing-duration" min="1" max="60" value="5">
+            </div>
+            <div class="breathing-circle" id="breathing-circle">
+                Breathe In
+            </div>
+            <button class="btn" id="start-breathing">Start Session</button>
+            <button class="btn" id="stop-breathing" style="display: none;">Stop Session</button>
+            <div class="result" id="breathing-result">
+                <h3>Session Info</h3>
+                <p>Start a session to see information here</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Main Application JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tool navigation
+            const toolCards = document.querySelectorAll('.tool-card');
+            const toolScreens = document.querySelectorAll('.tool-screen');
+            const closeButtons = document.querySelectorAll('.close-btn');
+            
+            // Open tool screen when card is clicked
+            toolCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const toolId = this.getAttribute('data-tool');
+                    document.getElementById(toolId).classList.add('active');
+                });
+            });
+            
+            // Close tool screen when close button is clicked
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.tool-screen').classList.remove('active');
+                });
+            });
+            
+            // Close tool screen when clicking outside content
+            toolScreens.forEach(screen => {
+                screen.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Initialize tool functionalities
+            initializeAgeCalculator();
+            initializeUnitConverter();
+            initializeFlashcardQuiz();
+            initializeLoanCalculator();
+            initializeGeometryHelper();
+            initializeTimezoneConverter();
+            initializeDiceRoller();
+            initializeNumberConverter();
+            initializePercentageTool();
+            initializeBreathingTimer();
+        });
+
+        // Age Calculator Functionality
+        function initializeAgeCalculator() {
+            const calculateBtn = document.getElementById('calculate-age');
+            calculateBtn.addEventListener('click', function() {
+                const birthdate = new Date(document.getElementById('birthdate').value);
+                const targetDateInput = document.getElementById('target-date').value;
+                const targetDate = targetDateInput ? new Date(targetDateInput) : new Date();
+                
+                if (!birthdate.getTime()) {
+                    alert('Please enter a valid birth date');
+                    return;
+                }
+                
+                let years = targetDate.getFullYear() - birthdate.getFullYear();
+                let months = targetDate.getMonth() - birthdate.getMonth();
+                let days = targetDate.getDate() - birthdate.getDate();
+                
+                if (days < 0) {
+                    months--;
+                    // Get days in previous month
+                    const prevMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+                
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+                
+                const resultElement = document.getElementById('age-result');
+                resultElement.innerHTML = `
+                    <h3>Age Calculation</h3>
+                    <p><strong>Age:</strong> ${years} years, ${months} months, ${days} days</p>
+                    <p><strong>Total Months:</strong> ${years * 12 + months}</p>
+                    <p><strong>Total Days:</strong> ${Math.floor((targetDate - birthdate) / (1000 * 60 * 60 * 24))}</p>
+                `;
+            });
+        }
+
+        // Unit Converter Functionality
+        function initializeUnitConverter() {
+            const conversionType = document.getElementById('conversion-type');
+            const fromUnit = document.getElementById('from-unit');
+            const toUnit = document.getElementById('to-unit');
+            
+            // Define conversion units
+            const units = {
+                length: [
+                    { name: 'Meters', value: 'meters', factor: 1 },
+                    { name: 'Kilometers', value: 'kilometers', factor: 1000 },
+                    { name: 'Centimeters', value: 'centimeters', factor: 0.01 },
+                    { name: 'Millimeters', value: 'millimeters', factor: 0.001 },
+                    { name: 'Inches', value: 'inches', factor: 0.0254 },
+                    { name: 'Feet', value: 'feet', factor: 0.3048 },
+                    { name: 'Yards', value: 'yards', factor: 0.9144 },
+                    { name: 'Miles', value: 'miles', factor: 1609.34 }
+                ],
+                weight: [
+                    { name: 'Grams', value: 'grams', factor: 1 },
+                    { name: 'Kilograms', value: 'kilograms', factor: 1000 },
+                    { name: 'Milligrams', value: 'milligrams', factor: 0.001 },
+                    { name: 'Pounds', value: 'pounds', factor: 453.592 },
+                    { name: 'Ounces', value: 'ounces', factor: 28.3495 }
+                ],
+                temperature: [
+                    { name: 'Celsius', value: 'celsius' },
+                    { name: 'Fahrenheit', value: 'fahrenheit' },
+                    { name: 'Kelvin', value: 'kelvin' }
+                ],
+                volume: [
+                    { name: 'Liters', value: 'liters', factor: 1 },
+                    { name: 'Milliliters', value: 'milliliters', factor: 0.001 },
+                    { name: 'Gallons', value: 'gallons', factor: 3.78541 },
+                    { name: 'Quarts', value: 'quarts', factor: 0.946353 },
+                    { name: 'Pints', value: 'pints', factor: 0.473176 },
+                    { name: 'Cups', value: 'cups', factor: 0.24 }
+                ]
+            };
+            
+            // Populate unit dropdowns based on conversion type
+            function populateUnits() {
+                const type = conversionType.value;
+                const unitList = units[type];
+                
+                // Clear existing options
+                fromUnit.innerHTML = '';
+                toUnit.innerHTML = '';
+                
+                // Add new options
+                unitList.forEach(unit => {
+                    const fromOption = document.createElement('option');
+                    fromOption.value = unit.value;
+                    fromOption.textContent = unit.name;
+                    fromUnit.appendChild(fromOption);
+                    
+                    const toOption = document.createElement('option');
+                    toOption.value = unit.value;
+                    toOption.textContent = unit.name;
+                    toUnit.appendChild(toOption);
+                });
+                
+                // Set different default to-unit for better UX
+                if (unitList.length > 1) {
+                    toUnit.selectedIndex = 1;
+                }
+            }
+            
+            // Initial population
+            populateUnits();
+            
+            // Update units when conversion type changes
+            conversionType.addEventListener('change', populateUnits);
+            
+            // Handle conversion
+            document.getElementById('convert-units').addEventListener('click', function() {
+                const value = parseFloat(document.getElementById('conversion-value').value);
+                const from = fromUnit.value;
+                const to = toUnit.value;
+                const type = conversionType.value;
+                
+                if (isNaN(value)) {
+                    alert('Please enter a valid number');
+                    return;
+                }
+                
+                let result;
+                
+                if (type === 'temperature') {
+                    // Temperature conversions
+                    if (from === 'celsius') {
+                        if (to === 'fahrenheit') {
+                            result = (value * 9/5) + 32;
+                        } else if (to === 'kelvin') {
+                            result = value + 273.15;
+                        } else {
+                            result = value;
+                        }
+                    } else if (from === 'fahrenheit') {
+                        if (to === 'celsius') {
+                            result = (value - 32) * 5/9;
+                        } else if (to === 'kelvin') {
+                            result = (value - 32) * 5/9 + 273.15;
+                        } else {
+                            result = value;
+                        }
+                    } else if (from === 'kelvin') {
+                        if (to === 'celsius') {
+                            result = value - 273.15;
+                        } else if (to === 'fahrenheit') {
+                            result = (value - 273.15) * 9/5 + 32;
+                        } else {
+                            result = value;
+                        }
+                    }
+                } else {
+                    // Other conversions using factors
+                    const fromUnitObj = units[type].find(u => u.value === from);
+                    const toUnitObj = units[type].find(u => u.value === to);
+                    
+                    // Convert to base unit first, then to target unit
+                    const valueInBase = value * fromUnitObj.factor;
+                    result = valueInBase / toUnitObj.factor;
+                }
+                
+                const resultElement = document.getElementById('conversion-result');
+                resultElement.innerHTML = `
+                    <h3>Conversion Result</h3>
+                    <p>${value} ${from} = ${result.toFixed(4)} ${to}</p>
+                `;
+            });
+        }
+
+        // Flashcard Quiz Functionality
+        function initializeFlashcardQuiz() {
+            let flashcards = [];
+            let currentCardIndex = 0;
+            let isFlipped = false;
+            
+            document.getElementById('add-flashcard').addEventListener('click', function() {
+                const front = document.getElementById('flashcard-front').value;
+                const back = document.getElementById('flashcard-back').value;
+                
+                if (!front || !back) {
+                    alert('Please enter both front and back of the flashcard');
+                    return;
+                }
+                
+                flashcards.push({ front, back });
+                updateFlashcardList();
+                
+                // Clear inputs
+                document.getElementById('flashcard-front').value = '';
+                document.getElementById('flashcard-back').value = '';
+            });
+            
+            document.getElementById('start-quiz').addEventListener('click', function() {
+                if (flashcards.length === 0) {
+                    alert('Please add some flashcards first');
+                    return;
+                }
+                
+                currentCardIndex = 0;
+                isFlipped = false;
+                showFlashcard();
+            });
+            
+            function updateFlashcardList() {
+                const list = document.getElementById('flashcards-list');
+                list.innerHTML = '';
+                
+                flashcards.forEach((card, index) => {
+                    const cardElement = document.createElement('div');
+                    cardElement.style.padding = '0.5rem';
+                    cardElement.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+                    cardElement.innerHTML = `
+                        <strong>${index + 1}. ${card.front}</strong> → ${card.back}
+                        <button onclick="removeFlashcard(${index})" style="float: right; background: rgba(255,69,0,0.3); border: none; color: white; padding: 0.2rem 0.5rem; border-radius: 5px; cursor: pointer;">Remove</button>
+                    `;
+                    list.appendChild(cardElement);
+                });
+            }
+            
+            function showFlashcard() {
+                const card = flashcards[currentCardIndex];
+                const display = document.getElementById('flashcard-display');
+                display.innerHTML = `
+                    <h3>Flashcard ${currentCardIndex + 1} of ${flashcards.length}</h3>
+                    <div style="background: rgba(30,30,30,0.7); padding: 2rem; border-radius: 10px; min-height: 150px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin: 1rem 0;" id="flashcard-content">
+                        <div style="font-size: 1.5rem; text-align: center;">${isFlipped ? card.back : card.front}</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button class="btn" id="prev-card" ${currentCardIndex === 0 ? 'disabled' : ''}>Previous</button>
+                        <button class="btn" id="flip-card">Flip Card</button>
+                        <button class="btn" id="next-card" ${currentCardIndex === flashcards.length - 1 ? 'disabled' : ''}>Next</button>
+                    </div>
+                    <button class="btn" id="end-quiz" style="margin-top: 1rem; display: block; width: 100%;">End Quiz</button>
+                `;
+                
+                // Add event listeners for the new buttons
+                document.getElementById('flashcard-content').addEventListener('click', flipCard);
+                document.getElementById('flip-card').addEventListener('click', flipCard);
+                document.getElementById('prev-card').addEventListener('click', showPreviousCard);
+                document.getElementById('next-card').addEventListener('click', showNextCard);
+                document.getElementById('end-quiz').addEventListener('click', endQuiz);
+            }
+            
+            function flipCard() {
+                isFlipped = !isFlipped;
+                showFlashcard();
+            }
+            
+            function showPreviousCard() {
+                if (currentCardIndex > 0) {
+                    currentCardIndex--;
+                    isFlipped = false;
+                    showFlashcard();
+                }
+            }
+            
+            function showNextCard() {
+                if (currentCardIndex < flashcards.length - 1) {
+                    currentCardIndex++;
+                    isFlipped = false;
+                    showFlashcard();
+                }
+            }
+            
+            function endQuiz() {
+                updateFlashcardList();
+                const display = document.getElementById('flashcard-display');
+                display.innerHTML = `
+                    <h3>Flashcards</h3>
+                    <div id="flashcards-list"></div>
+                    <button class="btn" id="start-quiz" style="margin-top: 1rem;">Start Quiz</button>
+                `;
+                document.getElementById('start-quiz').addEventListener('click', function() {
+                    if (flashcards.length === 0) {
+                        alert('Please add some flashcards first');
+                        return;
+                    }
+                    
+                    currentCardIndex = 0;
+                    isFlipped = false;
+                    showFlashcard();
+                });
+                updateFlashcardList();
+            }
+            
+            // Make removeFlashcard function available globally
+            window.removeFlashcard = function(index) {
+                flashcards.splice(index, 1);
+                updateFlashcardList();
+            };
+        }
+
+        // Loan Calculator Functionality
+        function initializeLoanCalculator() {
+            document.getElementById('calculate-emi').addEventListener('click', function() {
+                const principal = parseFloat(document.getElementById('loan-amount').value);
+                const annualRate = parseFloat(document.getElementById('interest-rate').value);
+                const months = parseInt(document.getElementById('loan-term').value);
+                
+                if (isNaN(principal) || isNaN(annualRate) || isNaN(months)) {
+                    alert('Please enter valid numbers for all fields');
+                    return;
+                }
+                
+                const monthlyRate = annualRate / 100 / 12;
+                const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+                const totalPayment = emi * months;
+                const totalInterest = totalPayment - principal;
+                
+                const resultElement = document.getElementById('emi-result');
+                resultElement.innerHTML = `
+                    <h3>EMI Calculation</h3>
+                    <p><strong>Monthly EMI:</strong> $${emi.toFixed(2)}</p>
+                    <p><strong>Total Payment:</strong> $${totalPayment.toFixed(2)}</p>
+                    <p><strong>Total Interest:</strong> $${totalInterest.toFixed(2)}</p>
+                    <p><strong>Loan Amount:</strong> $${principal.toFixed(2)}</p>
+                `;
+            });
+        }
+
+        // Geometry Helper Functionality
+        function initializeGeometryHelper() {
+            const shapeType = document.getElementById('shape-type');
+            const shapeInputs = document.getElementById('shape-inputs');
+            
+            function updateShapeInputs() {
+                const shape = shapeType.value;
+                let inputsHTML = '';
+                
+                switch(shape) {
+                    case 'circle':
+                        inputsHTML = `
+                            <div class="input-group">
+                                <label for="circle-radius">Radius</label>
+                                <input type="number" id="circle-radius" placeholder="Enter radius">
+                            </div>
+                        `;
+                        break;
+                    case 'rectangle':
+                        inputsHTML = `
+                            <div class="input-group">
+                                <label for="rectangle-length">Length</label>
+                                <input type="number" id="rectangle-length" placeholder="Enter length">
+                            </div>
+                            <div class="input-group">
+                                <label for="rectangle-width">Width</label>
+                                <input type="number" id="rectangle-width" placeholder="Enter width">
+                            </div>
+                        `;
+                        break;
+                    case 'triangle':
+                        inputsHTML = `
+                            <div class="input-group">
+                                <label for="triangle-base">Base</label>
+                                <input type="number" id="triangle-base" placeholder="Enter base">
+                            </div>
+                            <div class="input-group">
+                                <label for="triangle-height">Height</label>
+                                <input type="number" id="triangle-height" placeholder="Enter height">
+                            </div>
+                            <div class="input-group">
+                                <label for="triangle-side1">Side 1</label>
+                                <input type="number" id="triangle-side1" placeholder="Enter side 1">
+                            </div>
+                            <div class="input-group">
+                                <label for="triangle-side2">Side 2</label>
+                                <input type="number" id="triangle-side2" placeholder="Enter side 2">
+                            </div>
+                        `;
+                        break;
+                    case 'sphere':
+                        inputsHTML = `
+                            <div class="input-group">
+                                <label for="sphere-radius">Radius</label>
+                                <input type="number" id="sphere-radius" placeholder="Enter radius">
+                            </div>
+                        `;
+                        break;
+                }
+                
+                shapeInputs.innerHTML = inputsHTML;
+            }
+            
+            // Initial setup
+            updateShapeInputs();
+            
+            // Update inputs when shape changes
+            shapeType.addEventListener('change', updateShapeInputs);
+            
+            // Handle calculation
+            document.getElementById('calculate-geometry').addEventListener('click', function() {
+                const shape = shapeType.value;
+                let resultHTML = '';
+                
+                switch(shape) {
+                    case 'circle':
+                        const radius = parseFloat(document.getElementById('circle-radius').value);
+                        if (isNaN(radius)) {
+                            alert('Please enter a valid radius');
+                            return;
+                        }
+                        const area = Math.PI * radius * radius;
+                        const circumference = 2 * Math.PI * radius;
+                        resultHTML = `
+                            <h3>Circle Calculations</h3>
+                            <p><strong>Area:</strong> ${area.toFixed(2)}</p>
+                            <p><strong>Circumference:</strong> ${circumference.toFixed(2)}</p>
+                        `;
+                        break;
+                        
+                    case 'rectangle':
+                        const length = parseFloat(document.getElementById('rectangle-length').value);
+                        const width = parseFloat(document.getElementById('rectangle-width').value);
+                        if (isNaN(length) || isNaN(width)) {
+                            alert('Please enter valid length and width');
+                            return;
+                        }
+                        const rectArea = length * width;
+                        const rectPerimeter = 2 * (length + width);
+                        resultHTML = `
+                            <h3>Rectangle Calculations</h3>
+                            <p><strong>Area:</strong> ${rectArea.toFixed(2)}</p>
+                            <p><strong>Perimeter:</strong> ${rectPerimeter.toFixed(2)}</p>
+                        `;
+                        break;
+                        
+                    case 'triangle':
+                        const base = parseFloat(document.getElementById('triangle-base').value);
+                        const height = parseFloat(document.getElementById('triangle-height').value);
+                        const side1 = parseFloat(document.getElementById('triangle-side1').value);
+                        const side2 = parseFloat(document.getElementById('triangle-side2').value);
+                        if (isNaN(base) || isNaN(height) || isNaN(side1) || isNaN(side2)) {
+                            alert('Please enter valid values for all fields');
+                            return;
+                        }
+                        const triangleArea = 0.5 * base * height;
+                        const trianglePerimeter = base + side1 + side2;
+                        resultHTML = `
+                            <h3>Triangle Calculations</h3>
+                            <p><strong>Area:</strong> ${triangleArea.toFixed(2)}</p>
+                            <p><strong>Perimeter:</strong> ${trianglePerimeter.toFixed(2)}</p>
+                        `;
+                        break;
+                        
+                    case 'sphere':
+                        const sphereRadius = parseFloat(document.getElementById('sphere-radius').value);
+                        if (isNaN(sphereRadius)) {
+                            alert('Please enter a valid radius');
+                            return;
+                        }
+                        const sphereVolume = (4/3) * Math.PI * Math.pow(sphereRadius, 3);
+                        const sphereSurfaceArea = 4 * Math.PI * Math.pow(sphereRadius, 2);
+                        resultHTML = `
+                            <h3>Sphere Calculations</h3>
+                            <p><strong>Volume:</strong> ${sphereVolume.toFixed(2)}</p>
+                            <p><strong>Surface Area:</strong> ${sphereSurfaceArea.toFixed(2)}</p>
+                        `;
+                        break;
+                }
+                
+                document.getElementById('geometry-result').innerHTML = resultHTML;
+            });
+        }
+
+        // Timezone Converter Functionality
+        function initializeTimezoneConverter() {
+            const fromTimezone = document.getElementById('from-timezone');
+            const toTimezone = document.getElementById('to-timezone');
+            
+            // Populate timezone dropdowns
+            const timezones = [
+                'UTC', 'GMT', 'EST', 'PST', 'CST', 'MST', 
+                'Europe/London', 'Europe/Paris', 'Asia/Tokyo', 
+                'Asia/Shanghai', 'Australia/Sydney', 'Pacific/Auckland'
+            ];
+            
+            timezones.forEach(tz => {
+                const fromOption = document.createElement('option');
+                fromOption.value = tz;
+                fromOption.textContent = tz;
+                fromTimezone.appendChild(fromOption);
+                
+                const toOption = document.createElement('option');
+                toOption.value = tz;
+                toOption.textContent = tz;
+                toTimezone.appendChild(toOption);
+            });
+            
+            // Set default timezones
+            fromTimezone.value = 'UTC';
+            toTimezone.value = 'EST';
+            
+            // Handle conversion
+            document.getElementById('convert-timezone').addEventListener('click', function() {
+                const fromTz = fromTimezone.value;
+                const toTz = toTimezone.value;
+                const timeInput = document.getElementById('time-input').value;
+                
+                if (!timeInput) {
+                    alert('Please enter a time');
+                    return;
+                }
+                
+                // For a real implementation, you would use a library like moment-timezone
+                // This is a simplified version for demonstration
+                let convertedTime = timeInput;
+                
+                // Simple time adjustment for demonstration
+                // In a real app, you would use proper timezone conversion
+                if (fromTz === 'UTC' && toTz === 'EST') {
+                    // UTC to EST is -5 hours
+                    const [hours, minutes] = timeInput.split(':').map(Number);
+                    let newHours = hours - 5;
+                    if (newHours < 0) newHours += 24;
+                    convertedTime = `${newHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                } else if (fromTz === 'EST' && toTz === 'UTC') {
+                    // EST to UTC is +5 hours
+                    const [hours, minutes] = timeInput.split(':').map(Number);
+                    let newHours = hours + 5;
+                    if (newHours >= 24) newHours -= 24;
+                    convertedTime = `${newHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                }
+                
+                const resultElement = document.getElementById('timezone-result');
+                resultElement.innerHTML = `
+                    <h3>Time Conversion</h3>
+                    <p><strong>${fromTz}:</strong> ${timeInput}</p>
+                    <p><strong>${toTz}:</strong> ${convertedTime}</p>
+                `;
+            });
+        }
+
+        // Dice Roller & Coin Flip Functionality
+        function initializeDiceRoller() {
+            // Dice rolling
+            document.getElementById('roll-dice').addEventListener('click', function() {
+                const dice1 = document.getElementById('dice-1');
+                const dice2 = document.getElementById('dice-2');
+                
+                // Add rolling animation
+                dice1.classList.add('rolling');
+                dice2.classList.add('rolling');
+                
+                // Generate random numbers after animation
+                setTimeout(() => {
+                    const roll1 = Math.floor(Math.random() * 6) + 1;
+                    const roll2 = Math.floor(Math.random() * 6) + 1;
+                    
+                    dice1.textContent = roll1;
+                    dice2.textContent = roll2;
+                    
+                    // Remove animation class
+                    dice1.classList.remove('rolling');
+                    dice2.classList.remove('rolling');
+                }, 500);
+            });
+            
+            // Coin flipping
+            document.getElementById('flip-coin').addEventListener('click', function() {
+                const coin = document.getElementById('coin');
+                
+                // Add flipping animation
+                coin.classList.add('flipping');
+                
+                // Generate random result after animation
+                setTimeout(() => {
+                    const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
+                    coin.textContent = result;
+                    
+                    // Remove animation class
+                    coin.classList.remove('flipping');
+                }, 1000);
+            });
+        }
+
+        // Number System Converter Functionality
+        function initializeNumberConverter() {
+            document.getElementById('convert-number').addEventListener('click', function() {
+                const numberInput = document.getElementById('number-input').value;
+                const fromBase = parseInt(document.getElementById('from-base').value);
+                const toBase = parseInt(document.getElementById('to-base').value);
+                
+                if (!numberInput) {
+                    alert('Please enter a number');
+                    return;
+                }
+                
+                let decimalValue;
+                
+                // Convert from source base to decimal
+                try {
+                    if (fromBase === 10) {
+                        decimalValue = parseInt(numberInput, 10);
+                    } else if (fromBase === 2) {
+                        decimalValue = parseInt(numberInput, 2);
+                    } else if (fromBase === 8) {
+                        decimalValue = parseInt(numberInput, 8);
+                    } else if (fromBase === 16) {
+                        decimalValue = parseInt(numberInput, 16);
+                    }
+                } catch (e) {
+                    alert('Invalid number for the selected base');
+                    return;
+                }
+                
+                if (isNaN(decimalValue)) {
+                    alert('Invalid number for the selected base');
+                    return;
+                }
+                
+                // Convert from decimal to target base
+                let result;
+                if (toBase === 10) {
+                    result = decimalValue.toString(10);
+                } else if (toBase === 2) {
+                    result = decimalValue.toString(2);
+                } else if (toBase === 8) {
+                    result = decimalValue.toString(8);
+                } else if (toBase === 16) {
+                    result = decimalValue.toString(16).toUpperCase();
+                }
+                
+                const resultElement = document.getElementById('number-result');
+                resultElement.innerHTML = `
+                    <h3>Number Conversion</h3>
+                    <p><strong>Base ${fromBase}:</strong> ${numberInput}</p>
+                    <p><strong>Base ${toBase}:</strong> ${result}</p>
+                    <p><strong>Decimal:</strong> ${decimalValue}</p>
+                `;
+            });
+        }
+
+        // Percentage & Ratio Tool Functionality
+        function initializePercentageTool() {
+            const percentageType = document.getElementById('percentage-type');
+            const percentageInputs = document.getElementById('percentage-inputs');
+            
+            function updatePercentageInputs() {
+                const type = percentageType.value;
+                let inputsHTML = '';
+                
+                switch(type) {
+                    case 'percentage':
+                        inputsHTML = `
+                            <div class="input-group">
+                                <label for="percentage-value">Percentage</label>
+                                <input type="number" id="percentage-value" placeholder="Enter percentage">
+                            </div>
+                            <div class="input-group">
+                                <label for="percentage-number">Number</label>
+                                <input type="number" id="percentage-number" placeholder="Enter number">
+                            </div>
+                        `;
+                        break;
+                    case 'increase':
+                    case 'decrease':
+                        inputsHTML = `
+                            <div class="input-group">
+                                <label for="original-value">Original Value</label>
+                                <input type="number" id="original-value" placeholder="Enter original value">
+                            </div>
+                            <div class="input-group">
+                                <label for="change-percentage">Percentage</label>
+                                <input type="number" id="change-percentage" placeholder="Enter percentage">
+                            </div>
+                        `;
+                        break;
+                    case 'ratio':
+                        inputsHTML = `
+                            <div class="input-group">
+                                <label for="ratio-a">Value A</label>
+                                <input type="number" id="ratio-a" placeholder="Enter value A">
+                            </div>
+                            <div class="input-group">
+                                <label for="ratio-b">Value B</label>
+                                <input type="number" id="ratio-b" placeholder="Enter value B">
+                            </div>
+                        `;
+                        break;
+                }
+                
+                percentageInputs.innerHTML = inputsHTML;
+            }
+            
+            // Initial setup
+            updatePercentageInputs();
+            
+            // Update inputs when type changes
+            percentageType.addEventListener('change', updatePercentageInputs);
+            
+            // Handle calculation
+            document.getElementById('calculate-percentage').addEventListener('click', function() {
+                const type = percentageType.value;
+                let resultHTML = '';
+                
+                switch(type) {
+                    case 'percentage':
+                        const percentage = parseFloat(document.getElementById('percentage-value').value);
+                        const number = parseFloat(document.getElementById('percentage-number').value);
+                        if (isNaN(percentage) || isNaN(number)) {
+                            alert('Please enter valid numbers');
+                            return;
+                        }
+                        const result = (percentage / 100) * number;
+                        resultHTML = `
+                            <h3>Percentage Calculation</h3>
+                            <p><strong>${percentage}% of ${number}:</strong> ${result.toFixed(2)}</p>
+                        `;
+                        break;
+                        
+                    case 'increase':
+                        const originalValue = parseFloat(document.getElementById('original-value').value);
+                        const increasePercentage = parseFloat(document.getElementById('change-percentage').value);
+                        if (isNaN(originalValue) || isNaN(increasePercentage)) {
+                            alert('Please enter valid numbers');
+                            return;
+                        }
+                        const increasedValue = originalValue * (1 + increasePercentage/100);
+                        const increaseAmount = increasedValue - originalValue;
+                        resultHTML = `
+                            <h3>Percentage Increase</h3>
+                            <p><strong>Original Value:</strong> ${originalValue.toFixed(2)}</p>
+                            <p><strong>Increase Amount:</strong> ${increaseAmount.toFixed(2)}</p>
+                            <p><strong>New Value:</strong> ${increasedValue.toFixed(2)}</p>
+                        `;
+                        break;
+                        
+                    case 'decrease':
+                        const originalValueDec = parseFloat(document.getElementById('original-value').value);
+                        const decreasePercentage = parseFloat(document.getElementById('change-percentage').value);
+                        if (isNaN(originalValueDec) || isNaN(decreasePercentage)) {
+                            alert('Please enter valid numbers');
+                            return;
+                        }
+                        const decreasedValue = originalValueDec * (1 - decreasePercentage/100);
+                        const decreaseAmount = originalValueDec - decreasedValue;
+                        resultHTML = `
+                            <h3>Percentage Decrease</h3>
+                            <p><strong>Original Value:</strong> ${originalValueDec.toFixed(2)}</p>
+                            <p><strong>Decrease Amount:</strong> ${decreaseAmount.toFixed(2)}</p>
+                            <p><strong>New Value:</strong> ${decreasedValue.toFixed(2)}</p>
+                        `;
+                        break;
+                        
+                    case 'ratio':
+                        const ratioA = parseFloat(document.getElementById('ratio-a').value);
+                        const ratioB = parseFloat(document.getElementById('ratio-b').value);
+                        if (isNaN(ratioA) || isNaN(ratioB)) {
+                            alert('Please enter valid numbers');
+                            return;
+                        }
+                        const ratio = ratioA / ratioB;
+                        const simplifiedRatio = simplifyRatio(ratioA, ratioB);
+                        resultHTML = `
+                            <h3>Ratio Calculation</h3>
+                            <p><strong>Ratio:</strong> ${ratioA}:${ratioB}</p>
+                            <p><strong>Simplified Ratio:</strong> ${simplifiedRatio}</p>
+                            <p><strong>Value:</strong> ${ratio.toFixed(4)}</p>
+                        `;
+                        break;
+                }
+                
+                document.getElementById('percentage-result').innerHTML = resultHTML;
+            });
+            
+            // Helper function to simplify ratio
+            function simplifyRatio(a, b) {
+                const gcd = (x, y) => {
+                    while(y) {
+                        const t = y;
+                        y = x % y;
+                        x = t;
+                    }
+                    return x;
+                };
+                
+                const divisor = gcd(a, b);
+                return `${a/divisor}:${b/divisor}`;
+            }
+        }
+
+        // Breathing Timer Functionality
+        function initializeBreathingTimer() {
+            let breathingInterval;
+            let isBreathing = false;
+            let breathingPhase = 'in'; // 'in', 'hold', or 'out'
+            let timeLeft;
+            let totalTime;
+            
+            document.getElementById('start-breathing').addEventListener('click', function() {
+                if (isBreathing) return;
+                
+                const duration = parseInt(document.getElementById('breathing-duration').value) * 60; // Convert to seconds
+                if (isNaN(duration) || duration <= 0) {
+                    alert('Please enter a valid duration');
+                    return;
+                }
+                
+                totalTime = duration;
+                timeLeft = duration;
+                isBreathing = true;
+                
+                // Update UI
+                document.getElementById('start-breathing').style.display = 'none';
+                document.getElementById('stop-breathing').style.display = 'inline-block';
+                
+                // Start breathing cycle
+                startBreathingCycle();
+                
+                // Update timer
+                breathingInterval = setInterval(updateTimer, 1000);
+            });
+            
+            document.getElementById('stop-breathing').addEventListener('click', function() {
+                stopBreathingSession();
+            });
+            
+            function startBreathingCycle() {
+                const circle = document.getElementById('breathing-circle');
+                circle.style.animation = 'pulse 8s infinite ease-in-out';
+                
+                // Change text based on breathing phase
+                let phaseInterval = setInterval(() => {
+                    if (!isBreathing) {
+                        clearInterval(phaseInterval);
+                        return;
+                    }
+                    
+                    switch(breathingPhase) {
+                        case 'in':
+                            breathingPhase = 'hold';
+                            circle.textContent = 'Hold';
+                            break;
+                        case 'hold':
+                            breathingPhase = 'out';
+                            circle.textContent = 'Breathe Out';
+                            break;
+                        case 'out':
+                            breathingPhase = 'in';
+                            circle.textContent = 'Breathe In';
+                            break;
+                    }
+                }, 2667); // 8 seconds total for a complete cycle
+            }
+            
+            function updateTimer() {
+                if (!isBreathing) return;
+                
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('breathing-result').innerHTML = `
+                    <h3>Session Info</h3>
+                    <p><strong>Time Left:</strong> ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</p>
+                    <p><strong>Total Duration:</strong> ${Math.floor(totalTime / 60)} minutes</p>
+                    <p><strong>Breathing Phase:</strong> ${breathingPhase === 'in' ? 'Breathe In' : breathingPhase === 'hold' ? 'Hold' : 'Breathe Out'}</p>
+                `;
+                
+                if (timeLeft <= 0) {
+                    stopBreathingSession();
+                    document.getElementById('breathing-result').innerHTML += `<p style="color: var(--secondary); margin-top: 1rem;"><strong>Session Complete! Well done!</strong></p>`;
+                }
+            }
+            
+            function stopBreathingSession() {
+                isBreathing = false;
+                clearInterval(breathingInterval);
+                
+                // Reset UI
+                document.getElementById('start-breathing').style.display = 'inline-block';
+                document.getElementById('stop-breathing').style.display = 'none';
+                
+                const circle = document.getElementById('breathing-circle');
+                circle.style.animation = 'none';
+                circle.textContent = 'Breathe In';
+                breathingPhase = 'in';
+                
+                document.getElementById('breathing-result').innerHTML = `
+                    <h3>Session Info</h3>
+                    <p>Start a session to see information here</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
